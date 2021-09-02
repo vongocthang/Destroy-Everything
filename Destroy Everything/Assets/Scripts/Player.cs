@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Player : MonoBehaviour
 {
     public GameObject gun;
+    Animator gunAnim;
     public GameObject bullet;
     public GameObject leg;
     public GameObject hand;
@@ -12,6 +14,8 @@ public class Player : MonoBehaviour
     float dis;//Khoảng cách từ Player đến mục tiêu gần nhất
     int location;//Vị trí của mục tiêu gần nhất trong mảng target
     public bool flipX;
+
+    
 
     //Biến tạm thời
     float timeLine;
@@ -22,9 +26,12 @@ public class Player : MonoBehaviour
     {
         target = GameObject.FindGameObjectsWithTag("Target");
         dis = Vector3.Distance(transform.position, target[0].transform.position);
-
+        gunAnim = gun.GetComponent<Animator>();
         timeLine = Time.time;
         flipX = false;
+
+        
+        
     }
 
     // Update is called once per frame
@@ -74,6 +81,7 @@ public class Player : MonoBehaviour
         {
             if (Time.time > timeLine + 0.5)
             {
+                gunAnim.Play("fire");
                 Instantiate(bullet, bullet.transform.position, gun.transform.rotation);
                 timeLine = Time.time;
             }

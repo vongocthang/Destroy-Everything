@@ -20,9 +20,10 @@ public class Bullet : MonoBehaviour
         MoveForward();
     }
 
-    //Di chuyển
+    //Bay về phía trước
     void MoveForward()
     {
+        //Khi súng lật mặt thì đạn cũng phải lật
         if (flipX == false)
         {
             transform.Translate(Vector3.right * speed * Time.deltaTime);
@@ -30,6 +31,21 @@ public class Bullet : MonoBehaviour
         else
         {
             transform.Translate(Vector3.left * speed * Time.deltaTime);
+        }
+    }
+
+    //
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.tag=="Tilemap blocked")
+        {
+            Debug.Log("trung tuong");
+            Destroy(gameObject);
+        }
+        if (other.tag == "Target")
+        {
+            Debug.Log("trung muc tieu");
+            Destroy(gameObject);
         }
     }
 }
