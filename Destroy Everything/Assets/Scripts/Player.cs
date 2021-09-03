@@ -9,12 +9,13 @@ public class Player : MonoBehaviour
     Animator gunAnim;
     public GameObject bullet;
     public GameObject leg;
-    public GameObject hand;
+    public GameObject head;
     public GameObject[] target;//Tập các mục tiêu cần tiêu diệt
     float dis;//Khoảng cách từ Player đến mục tiêu gần nhất
     int location;//Vị trí của mục tiêu gần nhất trong mảng target
     public bool flipX;
 
+    public MainUI mainUI;
     
 
     //Biến tạm thời
@@ -39,19 +40,22 @@ public class Player : MonoBehaviour
     {
         FindTarget();
         GunControl();
+        //HeadControl();
         BulletControl();
         FlipControl();
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Soldier")
+        if (other.tag == "Tilemap blocked")
         {
-            Debug.Log("va cham voi " + other.tag);
+            GetComponent<Rigidbody2D>().gravityScale = 0;
+            Debug.Log("cham dat");
+            mainUI.down = false;
         }
     }
 
-    //Điều khiển súng, xoay, 
+    //Điều khiển súng, nhìn về mục tiêu gần nhất
     void GunControl()
     {
         Vector3 a = target[location].transform.position;
@@ -69,6 +73,26 @@ public class Player : MonoBehaviour
         }
         
         gun.GetComponent<Rigidbody2D>().rotation = angle;
+    }
+
+    //Xoay đầu hướng nhìn về mục tiêu gần nhất
+    void HeadControl()
+    {
+        Vector3 a = target[location].transform.position;
+        a = a - new Vector3(0, 0, target[location].transform.position.z);
+        Vector3 direction = a - head.transform.position;
+
+        float angle;
+        if (flipX == false)
+        {
+            angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        }
+        else
+        {
+            angle = Mathf.Atan2(0 - direction.y, 0 - direction.x) * Mathf.Rad2Deg;
+        }
+
+        head.GetComponent<Rigidbody2D>().rotation = angle;
     }
 
     //Quản lý đạn
@@ -110,7 +134,7 @@ public class Player : MonoBehaviour
     {
         if(transform.position.x > target[location].transform.position.x)
         {
-            hand.GetComponent<SpriteRenderer>().flipX = true;
+            head.GetComponent<SpriteRenderer>().flipX = true;
             gun.GetComponent<SpriteRenderer>().flipX = true;
             bullet.GetComponent<SpriteRenderer>().flipX = true;
             leg.GetComponent<SpriteRenderer>().flipX = true;
@@ -118,7 +142,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            hand.GetComponent<SpriteRenderer>().flipX = false;
+            head.GetComponent<SpriteRenderer>().flipX = false;
             gun.GetComponent<SpriteRenderer>().flipX = false;
             bullet.GetComponent<SpriteRenderer>().flipX = false;
             leg.GetComponent<SpriteRenderer>().flipX = false;

@@ -8,16 +8,13 @@ public class MainUI : MonoBehaviour
     Rigidbody2D playerRB;
     public float moveSpeed;//Tốc đọ di chuyển
     public float jumpSpeed;//Lực nhảy
+    public bool up = false;//Đang nhảy lên
+    public bool down = false;//Đang hạ xuống
     Animator playerAnim;
 
     public FloatingJoystick floJoy;
-    public float addForce;
-    public float bootsMultiplier;
-
     //Biến tạm
-    public float aa;
-    float bb;
-    float mass;
+    public float height;//Độ cao tối đa có thể nhảy đến;
 
     // Start is called before the first frame update
     void Start()
@@ -28,8 +25,7 @@ public class MainUI : MonoBehaviour
         playerAnim = player.GetComponentInChildren<Animator>();
 
         //Biến tạm
-        bb = player.GetComponent<Rigidbody2D>().mass;
-
+        
     }
 
     // Update is called once per frame
@@ -60,26 +56,37 @@ public class MainUI : MonoBehaviour
         }
     }
 
-
+    float y;
     //Điều khiển nhảy
     public void JumpUp()
     {
-        //player.transform.Translate(Vector2.up * jumpSpeed * Time.deltaTime);
-        
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (up == false)
         {
-            Debug.Log("nhay");
-            playerRB.AddForce(new Vector2(0, jumpSpeed) * Time.deltaTime, ForceMode2D.Impulse);
-
-            jumpSpeed-= aa;
+            y = player.transform.position.y;
         }
-        if (Input.GetKeyUp(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.UpArrow) && down == false)
         {
-            jumpSpeed = bb;
+            up = true;
+            playerRB.gravityScale = 0;
+            player.transform.Translate(Vector2.up * jumpSpeed * Time.deltaTime);
         }
-        if (jumpSpeed < aa)
+        if (Input.GetKeyUp(KeyCode.UpArrow) || player.transform.position.y > y + height)
         {
-            jumpSpeed = 0;
+            Debug.Log("ha xuong");
+            down = true;
+            up = false;
+            playerRB.gravityScale = 1;
         }
+        //if (jumpSpeed < aa)
+        //{
+        //    jumpSpeed = 0;
+        //}
     }
+
+    //Hạ xuống sau khi nhảy lên
+    public void GetDown()
+    {
+
+    }
+
 }
