@@ -39,12 +39,12 @@ public class Bullet : MonoBehaviour
     {
         if(other.tag=="Tilemap blocked")
         {
-            Debug.Log("trung tuong");
+            //Debug.Log("trung tuong");
             Destroy(gameObject);
         }
         if (other.tag == "Target")
         {
-            Debug.Log("trung muc tieu");
+            //Debug.Log("trung muc tieu");
             Destroy(gameObject);
         }
     }

@@ -5,34 +5,45 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    Rigidbody2D rb;
+    Collider2D cd;
     public GameObject gun;
     Animator gunAnim;
     public GameObject bullet;
     public GameObject leg;
+    Animator legAnim;
     public GameObject head;
+    public GameObject headPosition;
     public GameObject[] target;//Tập các mục tiêu cần tiêu diệt
     float dis;//Khoảng cách từ Player đến mục tiêu gần nhất
     int location;//Vị trí của mục tiêu gần nhất trong mảng target
     public bool flipX;
+
+    public float moveSpeed;//Tốc đọ di chuyển trái phải
+    public float jumpSpeed;//Lực nhảy lên
+    public bool jumpUp = false;//Đang nhảy lên - ấn nút mũi tên lên
+    public bool getDown = false;//Đang hạ xuống sau khi nhảy lên
+    public bool jumpDown = false;//Đang chủ động nhảy xuống - ấn nút mũi tên xuống
 
     public MainUI mainUI;
     
 
     //Biến tạm thời
     float timeLine;
+    public float height;//Độ cao tối đa có thể nhảy đến;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
+        cd = GetComponent<Collider2D>();
         target = GameObject.FindGameObjectsWithTag("Target");
         dis = Vector3.Distance(transform.position, target[0].transform.position);
         gunAnim = gun.GetComponent<Animator>();
+        legAnim = leg.GetComponent<Animator>();
         timeLine = Time.time;
         flipX = false;
-
-        
-        
     }
 
     // Update is called once per frame
@@ -40,18 +51,96 @@ public class Player : MonoBehaviour
     {
         FindTarget();
         GunControl();
-        //HeadControl();
+        HeadControl();
         BulletControl();
         FlipControl();
+        JumpUp();
+        GetDown();
+        JumpDown();
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Tilemap blocked")
         {
-            GetComponent<Rigidbody2D>().gravityScale = 0;
-            Debug.Log("cham dat");
-            mainUI.down = false;
+            //rb.simulated = false;
+            getDown = false;
+            cd.isTrigger = false;
+            Debug.Log("chạm đất");
+        }
+        if(other.tag=="Tilemap not blocked")
+        {
+            //rb.simulated = false;
+            getDown = false;
+            cd.isTrigger = false;
+            Debug.Log("chạm địa hình");
+        }
+    }
+
+    //void OnTriggerExit2D(Collider2D other)
+    //{
+    //    if (other.tag == "Tilemap blocked")
+    //    {
+    //        //rb.simulated = true;
+    //        Debug.Log("địa hình bị chặn");
+    //        getDown = false;
+    //    }
+    //    if (other.tag == "Tilemap not blocked")
+    //    {
+    //        //rb.simulated = false;
+    //        Debug.Log("địa hình không bị chặn");
+    //        getDown = false;
+    //    }
+    //}
+
+    public float y;
+    //Điều khiển nhảy lên - ấn nút mũi tên lên
+    public void JumpUp()
+    {
+        //Lấy vị trí tung độ của Player khi đang đứng trên địa hình
+        if (jumpUp == false)
+        {
+            y = transform.position.y;
+        }
+        if (Input.GetKey(KeyCode.UpArrow) && getDown == false && jumpDown == false)
+        {
+            Debug.Log("nhảy lên");
+            cd.isTrigger = true;
+            jumpUp = true;
+            rb.simulated = false;
+            transform.Translate(Vector2.up * jumpSpeed * Time.deltaTime);
+        }
+    }
+
+    //Hạ xuống sau khi nhảy lên - bị động
+    public void GetDown()
+    {
+        if (jumpUp == true)
+        {
+            if (Input.GetKeyUp(KeyCode.UpArrow) || transform.position.y > y + height)
+            {
+                Debug.Log("hạ xuống");
+                rb.simulated = true;
+                getDown = true;
+                jumpUp = false;
+            }
+        }
+        if (getDown == true)
+        {
+            //legAnim.get("ide");
+            //legAnim.Play("jump down");
+        }
+    }
+
+    //Chủ động nhảy xuống - ấn nút mũi tên xuống
+    public void JumpDown()
+    {
+        if (getDown == false && getDown == false)
+        {
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+
+            }
         }
     }
 
@@ -78,6 +167,8 @@ public class Player : MonoBehaviour
     //Xoay đầu hướng nhìn về mục tiêu gần nhất
     void HeadControl()
     {
+        head.transform.position = headPosition.transform.position;
+
         Vector3 a = target[location].transform.position;
         a = a - new Vector3(0, 0, target[location].transform.position.z);
         Vector3 direction = a - head.transform.position;
@@ -154,7 +245,6 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(second);
 
-        
     }
     //a = a - new Vector3(0, 0, ray.origin.z);
     //Vector3 direction = a - arrow.transform.position;
