@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     public GameObject bullet;
     public GameObject leg;
     Animator legAnim;
+    Leg legScript;
     public GameObject head;
     public GameObject headPosition;
     public GameObject[] target;//Tập các mục tiêu cần tiêu diệt
@@ -42,6 +43,7 @@ public class Player : MonoBehaviour
         dis = Vector3.Distance(transform.position, target[0].transform.position);
         gunAnim = gun.GetComponent<Animator>();
         legAnim = leg.GetComponent<Animator>();
+        legScript = leg.GetComponent<Leg>();
         timeLine = Time.time;
         flipX = false;
     }
@@ -61,19 +63,13 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Tilemap blocked")
+        if(other.tag=="Tilemap blocked")
         {
-            //rb.simulated = false;
-            getDown = false;
-            cd.isTrigger = false;
-            Debug.Log("chạm đất");
+            
         }
         if(other.tag=="Tilemap not blocked")
         {
-            //rb.simulated = false;
-            getDown = false;
-            cd.isTrigger = false;
-            Debug.Log("chạm địa hình");
+
         }
     }
 
@@ -93,55 +89,44 @@ public class Player : MonoBehaviour
     //    }
     //}
 
-    public float y;
     //Điều khiển nhảy lên - ấn nút mũi tên lên
     public void JumpUp()
     {
-        //Lấy vị trí tung độ của Player khi đang đứng trên địa hình
-        if (jumpUp == false)
-        {
-            y = transform.position.y;
-        }
-        if (Input.GetKey(KeyCode.UpArrow) && getDown == false && jumpDown == false)
+        if (Input.GetKeyDown(KeyCode.UpArrow) && getDown == false && jumpDown == false)
         {
             Debug.Log("nhảy lên");
-            cd.isTrigger = true;
             jumpUp = true;
-            rb.simulated = false;
-            transform.Translate(Vector2.up * jumpSpeed * Time.deltaTime);
+            cd.isTrigger = true;
+            rb.velocity = Vector2.up * jumpSpeed;
         }
     }
 
+    public float yAfter, yBefor;
     //Hạ xuống sau khi nhảy lên - bị động
     public void GetDown()
     {
-        if (jumpUp == true)
+        yBefor = transform.position.y;
+        if (yBefor >= yAfter)
         {
-            if (Input.GetKeyUp(KeyCode.UpArrow) || transform.position.y > y + height)
-            {
-                Debug.Log("hạ xuống");
-                rb.simulated = true;
-                getDown = true;
-                jumpUp = false;
-            }
+            yAfter = yBefor;
         }
-        if (getDown == true)
+        if (legScript.action == false)
         {
-            //legAnim.get("ide");
-            //legAnim.Play("jump down");
+            yAfter = yBefor;
+        }
+        if (yBefor < yAfter && jumpUp == true)
+        {
+            Debug.Log("rơi xuống");
+            jumpUp = false;
+            //getDown = true;
+            cd.isTrigger = false;
         }
     }
 
     //Chủ động nhảy xuống - ấn nút mũi tên xuống
     public void JumpDown()
     {
-        if (getDown == false && getDown == false)
-        {
-            if (Input.GetKeyDown(KeyCode.DownArrow))
-            {
-
-            }
-        }
+        
     }
 
     //Điều khiển súng, nhìn về mục tiêu gần nhất
