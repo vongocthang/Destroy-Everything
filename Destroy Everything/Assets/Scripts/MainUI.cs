@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class MainUI : MonoBehaviour
 {
-    Player player;//
+    GameObject player;
+    Player playerSC;//
     Rigidbody2D playerRB;
-
     Animator playerAnim;
 
     public FloatingJoystick floJoy;
@@ -17,9 +17,10 @@ public class MainUI : MonoBehaviour
     void Start()
     {
         GameObject[] a = GameObject.FindGameObjectsWithTag("Player");
-        player = a[0].GetComponent<Player>();
-        playerRB = a[0].GetComponent<Rigidbody2D>();
-        playerAnim = a[0].GetComponentInChildren<Animator>();
+        player = a[0];
+        playerSC = player.GetComponent<Player>();
+        playerRB = player.GetComponent<Rigidbody2D>();
+        playerAnim = player.GetComponentInChildren<Animator>();
 
         //Biến tạm
         
@@ -38,13 +39,13 @@ public class MainUI : MonoBehaviour
 
         if(direction.x > 0)
         {
-            player.transform.Translate(Vector2.right * direction.x * player.moveSpeed
+            player.transform.Translate(Vector2.right * direction.x * playerSC.moveSpeed
                 * Time.deltaTime);
             playerAnim.Play("walk");
         }
         else
         {
-            player.transform.Translate(Vector2.right * direction.x * player.moveSpeed
+            player.transform.Translate(Vector2.right * direction.x * playerSC.moveSpeed
                 * Time.deltaTime);
         }
 
@@ -52,5 +53,11 @@ public class MainUI : MonoBehaviour
         {
             playerAnim.Play("ide");
         }
+    }
+
+    public void JumpDown()
+    {
+        player.GetComponent<Collider2D>().isTrigger = true;
+        playerSC.jumpDown = true;
     }
 }

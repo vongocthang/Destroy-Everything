@@ -23,16 +23,22 @@ public class Leg : MonoBehaviour
     {
         if (other.tag == "Tilemap blocked")
         {
-            if (player.jumpUp == false && player.getDown == false && player.jumpDown == false)
+            if (player.getDown == true || player.jumpDown == true)
             {
                 action = false;
+                player.getDown = false;
+                player.jumpDown = false;
+                Debug.Log("không hành động");
             }
         }
         if (other.tag == "Tilemap not blocked")
         {
-            if (player.jumpUp == false && player.getDown == false && player.jumpDown == false)
+            if (player.getDown == true || player.jumpDown == true)
             {
                 action = false;
+                player.getDown = false;
+                player.jumpDown = false;
+                Debug.Log("không hành động");
             }
         }
     }
@@ -42,10 +48,20 @@ public class Leg : MonoBehaviour
         if (other.tag == "Tilemap blocked")
         {
             action = true;
+            if (player.jumpUp == false)
+            {
+                player.jumpDown = true;
+                Debug.Log("nhảy xuống");
+            }
         }
         if (other.tag == "Tilemap not blocked")
         {
             action = true;
+            if (player.jumpUp == false)
+            {
+                player.jumpDown = true;
+                Debug.Log("nhảy xuống");
+            }
         }
     }
 }

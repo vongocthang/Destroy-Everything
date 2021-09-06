@@ -58,14 +58,14 @@ public class Player : MonoBehaviour
         FlipControl();
         JumpUp();
         GetDown();
-        JumpDown();
+        //JumpDown();
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if(other.tag=="Tilemap blocked")
         {
-            
+            cd.isTrigger = false;
         }
         if(other.tag=="Tilemap not blocked")
         {
@@ -92,7 +92,8 @@ public class Player : MonoBehaviour
     //Điều khiển nhảy lên - ấn nút mũi tên lên
     public void JumpUp()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow) && getDown == false && jumpDown == false)
+        if (Input.GetKeyDown(KeyCode.UpArrow) && jumpUp == false && jumpDown == false
+            && getDown == false)
         {
             Debug.Log("nhảy lên");
             jumpUp = true;
@@ -110,7 +111,7 @@ public class Player : MonoBehaviour
         {
             yAfter = yBefor;
         }
-        if (legScript.action == false)
+        if (jumpUp == false && getDown == false && jumpDown == false)
         {
             yAfter = yBefor;
         }
@@ -118,7 +119,7 @@ public class Player : MonoBehaviour
         {
             Debug.Log("rơi xuống");
             jumpUp = false;
-            //getDown = true;
+            getDown = true;
             cd.isTrigger = false;
         }
     }
@@ -126,7 +127,10 @@ public class Player : MonoBehaviour
     //Chủ động nhảy xuống - ấn nút mũi tên xuống
     public void JumpDown()
     {
-        
+        if (jumpDown == true)
+        {
+            cd.isTrigger = true;
+        }
     }
 
     //Điều khiển súng, nhìn về mục tiêu gần nhất

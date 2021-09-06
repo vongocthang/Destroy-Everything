@@ -467,7 +467,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.06654525, y: -1.7297384}
+  m_Offset: {x: 0.06654525, y: -2.5533066}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.2851774, y: 0.4372073}
@@ -478,7 +478,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.575333, y: 2.0549881}
+  m_Size: {x: 2.123177, y: 0.9246006}
   m_EdgeRadius: 0
 --- !u!114 &524230814
 MonoBehaviour:
@@ -551,7 +551,7 @@ MonoBehaviour:
   target: []
   flipX: 0
   moveSpeed: 5
-  jumpSpeed: 20
+  jumpSpeed: 13
   jumpUp: 0
   getDown: 0
   jumpDown: 0
@@ -574,7 +574,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 2
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -759,7 +759,7 @@ GameObject:
   - component: {fileID: 1026690745}
   - component: {fileID: 1026690744}
   m_Layer: 5
-  m_Name: Jump
+  m_Name: JumpUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1893,7 +1893,7 @@ GameObject:
   - component: {fileID: 1921800585}
   - component: {fileID: 1921800584}
   m_Layer: 5
-  m_Name: Down
+  m_Name: JumpDown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1960,7 +1960,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1921800585}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 176962927}
+        m_MethodName: JumpDown
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1921800585
 MonoBehaviour:
   m_ObjectHideFlags: 0
