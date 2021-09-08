@@ -57,7 +57,10 @@ public class MainUI : MonoBehaviour
 
     public void JumpDown()
     {
-        player.GetComponent<Collider2D>().isTrigger = true;
-        playerSC.jumpDown = true;
+        if (playerSC.onBlocked == false)
+        {
+            player.GetComponent<Collider2D>().isTrigger = true;
+            playerSC.jumpDown = true;
+        }
     }
 }

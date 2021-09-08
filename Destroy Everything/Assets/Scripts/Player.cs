@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class Player : MonoBehaviour
 {
     Rigidbody2D rb;
@@ -11,10 +10,11 @@ public class Player : MonoBehaviour
     Animator gunAnim;
     public GameObject bullet;
     public GameObject leg;
+    public bool onBlocked;
     Animator legAnim;
     Leg legScript;
     public GameObject head;
-    public GameObject headPosition;
+    //public GameObject headPosition;
     public GameObject[] target;//Tập các mục tiêu cần tiêu diệt
     float dis;//Khoảng cách từ Player đến mục tiêu gần nhất
     int location;//Vị trí của mục tiêu gần nhất trong mảng target
@@ -41,7 +41,7 @@ public class Player : MonoBehaviour
         cd = GetComponent<Collider2D>();
         target = GameObject.FindGameObjectsWithTag("Target");
         dis = Vector3.Distance(transform.position, target[0].transform.position);
-        gunAnim = gun.GetComponent<Animator>();
+        gunAnim = gun.GetComponentInChildren<Animator>();
         legAnim = leg.GetComponent<Animator>();
         legScript = leg.GetComponent<Leg>();
         timeLine = Time.time;
@@ -136,60 +136,74 @@ public class Player : MonoBehaviour
     //Điều khiển súng, nhìn về mục tiêu gần nhất
     void GunControl()
     {
-        Vector3 a = target[location].transform.position;
-        a = a - new Vector3(0, 0, target[location].transform.position.z);
-        Vector3 direction = a - gun.transform.position;
+        //Vector3 a = target[location].transform.position;
+        //a = a - new Vector3(0, 0, target[location].transform.position.z);
+        //Vector3 direction = a - gun.transform.position;
 
-        float angle;
-        if (flipX == false)
-        {
-            angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        }
-        else
-        {
-            angle = Mathf.Atan2(0 - direction.y, 0 - direction.x) * Mathf.Rad2Deg;
-        }
-        
-        gun.GetComponent<Rigidbody2D>().rotation = angle;
+        //float angle;
+        //if (flipX == false)
+        //{
+        //    angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        //}
+        //else
+        //{
+        //    angle = Mathf.Atan2(0 - direction.y, 0 - direction.x) * Mathf.Rad2Deg;
+        //}
+
+        //gun.GetComponent<Rigidbody2D>().rotation = angle;
+
+        Vector3 relativePos = target[location].transform.position - gun.transform.position;
+        Quaternion rotation = Quaternion.LookRotation(relativePos);
+        Quaternion current = gun.transform.localRotation;
+        gun.transform.localRotation = Quaternion.Slerp(current, rotation, 100 * Time.deltaTime);
     }
 
     //Xoay đầu hướng nhìn về mục tiêu gần nhất
     void HeadControl()
     {
-        head.transform.position = headPosition.transform.position;
+        //head.transform.position = Vector3.MoveTowards(head.transform.position,
+        //    headPosition.transform.position, 1000 * Time.deltaTime);
 
-        Vector3 a = target[location].transform.position;
-        a = a - new Vector3(0, 0, target[location].transform.position.z);
-        Vector3 direction = a - head.transform.position;
+        //Vector3 a = target[location].transform.position;
+        //a = a - new Vector3(0, 0, target[location].transform.position.z);
+        //Vector3 direction = a - head.transform.position;
 
-        float angle;
-        if (flipX == false)
-        {
-            angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        }
-        else
-        {
-            angle = Mathf.Atan2(0 - direction.y, 0 - direction.x) * Mathf.Rad2Deg;
-        }
+        //float angle;
+        //if (flipX == false)
+        //{
+        //    angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        //}
+        //else
+        //{
+        //    angle = Mathf.Atan2(0 - direction.y, 0 - direction.x) * Mathf.Rad2Deg;
+        //}
 
-        head.GetComponent<Rigidbody2D>().rotation = angle;
+        //head.GetComponent<Rigidbody2D>().rotation = angle;
+
+        Vector3 relativePos = target[location].transform.position - head.transform.position;
+        Quaternion rotation = Quaternion.LookRotation(relativePos);
+        Quaternion current = head.transform.localRotation;
+        head.transform.localRotation = Quaternion.Slerp(current, rotation, 100 * Time.deltaTime);
     }
 
     //Quản lý đạn
     void BulletControl()
     {
-        bullet.transform.position = gun.transform.position + new Vector3(0, 0.1f, 0);
+        //bullet.transform.position = gun.transform.position + new Vector3(0, 0.2f, 0);
         //bullet.transform.rotation = gun.transform.rotation;
-        bullet.GetComponent<SpriteRenderer>().flipX = gun.GetComponent<SpriteRenderer>().flipX;
+        //bullet.GetComponent<SpriteRenderer>().flipX = 
+        //    gun.GetComponentInChildren<SpriteRenderer>().flipX;
         if (target.Length > 0)
         {
             if (Time.time > timeLine + 0.5)
             {
                 gunAnim.Play("fire");
-                Instantiate(bullet, bullet.transform.position, gun.transform.rotation);
+                GameObject a = Instantiate(bullet, gun.transform.position + new Vector3(0, 0.2f, 0), 
+                    bullet.transform.rotation);
+                a.SetActive(true);
+                a.GetComponent<Bullet>().enabled = true;
                 timeLine = Time.time;
             }
-            
         }
     }
 
@@ -212,19 +226,19 @@ public class Player : MonoBehaviour
     //Điều khiển lật
     void FlipControl()
     {
-        if(transform.position.x > target[location].transform.position.x)
+        if (transform.position.x > target[location].transform.position.x)
         {
-            head.GetComponent<SpriteRenderer>().flipX = true;
-            gun.GetComponent<SpriteRenderer>().flipX = true;
-            bullet.GetComponent<SpriteRenderer>().flipX = true;
+            //head.GetComponentInChildren<SpriteRenderer>().flipX = true;
+            //gun.GetComponentInChildren<SpriteRenderer>().flipX = true;
+            //bullet.GetComponent<SpriteRenderer>().flipX = true;
             leg.GetComponent<SpriteRenderer>().flipX = true;
             flipX = true;
         }
         else
         {
-            head.GetComponent<SpriteRenderer>().flipX = false;
-            gun.GetComponent<SpriteRenderer>().flipX = false;
-            bullet.GetComponent<SpriteRenderer>().flipX = false;
+            //head.GetComponentInChildren<SpriteRenderer>().flipX = false;
+            //gun.GetComponentInChildren<SpriteRenderer>().flipX = false;
+            //bullet.GetComponent<SpriteRenderer>().flipX = false;
             leg.GetComponent<SpriteRenderer>().flipX = false;
             flipX = false;
         }
@@ -235,8 +249,19 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(second);
 
     }
+
     //a = a - new Vector3(0, 0, ray.origin.z);
     //Vector3 direction = a - arrow.transform.position;
     //angle = Mathf.Atan2(direction.y, direction.x)* Mathf.Rad2Deg;
     //arrowRb.rotation = angle;
+
+    //0.2839767
+    //0.4595959
+
+    //Vector3 relativePos = (target[number].transform.position + new Vector3(0, .1f, 0))
+    //        - tower.transform.position;
+    //Quaternion rotation = Quaternion.LookRotation(relativePos);
+    //Quaternion current = tower.transform.localRotation;
+
+    //tower.transform.localRotation = Quaternion.Slerp(current, rotation, speed* Time.deltaTime);
 }

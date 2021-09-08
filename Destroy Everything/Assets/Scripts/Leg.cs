@@ -23,6 +23,8 @@ public class Leg : MonoBehaviour
     {
         if (other.tag == "Tilemap blocked")
         {
+            player.onBlocked = true;
+
             if (player.getDown == true || player.jumpDown == true)
             {
                 action = false;
@@ -47,6 +49,8 @@ public class Leg : MonoBehaviour
     {
         if (other.tag == "Tilemap blocked")
         {
+            player.onBlocked = false;
+
             action = true;
             if (player.jumpUp == false)
             {

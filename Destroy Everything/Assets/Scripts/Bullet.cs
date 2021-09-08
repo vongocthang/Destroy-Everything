@@ -24,20 +24,22 @@ public class Bullet : MonoBehaviour
     void MoveForward()
     {
         //Khi súng lật mặt thì đạn cũng phải lật
-        if (flipX == false)
-        {
-            transform.Translate(Vector3.right * speed * Time.deltaTime);
-        }
-        else
-        {
-            transform.Translate(Vector3.left * speed * Time.deltaTime);
-        }
+        //if (flipX == false)
+        //{
+        //    transform.Translate(Vector3.right * speed * Time.deltaTime);
+        //}
+        //else
+        //{
+        //    transform.Translate(Vector3.left * speed * Time.deltaTime);
+        //}
+
+        transform.Translate(Vector3.right * speed * Time.deltaTime);
     }
 
     //
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.tag=="Tilemap blocked")
+        if(other.tag == "Tilemap blocked")
         {
             //Debug.Log("trung tuong");
             Destroy(gameObject);
