@@ -5,19 +5,19 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     Rigidbody2D rb;
-    Collider2D cd;
+    public Collider2D cd;
     public GameObject gun;
     Animator gunAnim;
     public GameObject bullet;
     public GameObject leg;
-    public bool onBlocked;
+    public GameObject head;
+    public bool onBlocked;//Đứng trên Tilemap không thể xuyên qua
     Animator legAnim;
     Leg legScript;
-    public GameObject head;
     //public GameObject headPosition;
-    public GameObject[] target;//Tập các mục tiêu cần tiêu diệt
+    GameObject[] target;//Tập các mục tiêu cần tiêu diệt
     float dis;//Khoảng cách từ Player đến mục tiêu gần nhất
-    int location;//Vị trí của mục tiêu gần nhất trong mảng target
+    public GameObject targetNearest;//Mục tiêu gần với Player nhất
     public bool flipX;
 
     public float moveSpeed;//Tốc đọ di chuyển trái phải
@@ -25,14 +25,14 @@ public class Player : MonoBehaviour
     public bool jumpUp = false;//Đang nhảy lên - ấn nút mũi tên lên
     public bool getDown = false;//Đang hạ xuống sau khi nhảy lên
     public bool jumpDown = false;//Đang chủ động nhảy xuống - ấn nút mũi tên xuống
+    float timeLine;
 
     public MainUI mainUI;
-    
+
+    public float damge;//Sát thương của 1 viên đạn
 
     //Biến tạm thời
-    float timeLine;
-    public float height;//Độ cao tối đa có thể nhảy đến;
-
+    
 
     // Start is called before the first frame update
     void Start()
@@ -46,6 +46,12 @@ public class Player : MonoBehaviour
         legScript = leg.GetComponent<Leg>();
         timeLine = Time.time;
         flipX = false;
+
+        if(PlayerPrefs.GetFloat("player damge") == 0)
+        {
+            PlayerPrefs.SetFloat("player damge", 10);
+        }
+        damge = PlayerPrefs.GetFloat("player damge");
     }
 
     // Update is called once per frame
@@ -53,12 +59,12 @@ public class Player : MonoBehaviour
     {
         FindTarget();
         GunControl();
-        HeadControl();
+        //HeadControl();
         BulletControl();
         FlipControl();
         JumpUp();
         GetDown();
-        //JumpDown();
+        JumpDown();
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -102,7 +108,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    public float yAfter, yBefor;
+    float yAfter, yBefor;
     //Hạ xuống sau khi nhảy lên - bị động
     public void GetDown()
     {
@@ -127,9 +133,14 @@ public class Player : MonoBehaviour
     //Chủ động nhảy xuống - ấn nút mũi tên xuống
     public void JumpDown()
     {
-        if (jumpDown == true)
+        if (Input.GetKeyDown(KeyCode.DownArrow) && jumpDown == false)
         {
-            cd.isTrigger = true;
+            if (onBlocked == false)
+            {
+                Debug.Log("nhảy xuống");
+                cd.isTrigger = true;
+                jumpDown = true;
+            }
         }
     }
 
@@ -152,7 +163,7 @@ public class Player : MonoBehaviour
 
         //gun.GetComponent<Rigidbody2D>().rotation = angle;
 
-        Vector3 relativePos = target[location].transform.position - gun.transform.position;
+        Vector3 relativePos = targetNearest.transform.position - gun.transform.position;
         Quaternion rotation = Quaternion.LookRotation(relativePos);
         Quaternion current = gun.transform.localRotation;
         gun.transform.localRotation = Quaternion.Slerp(current, rotation, 100 * Time.deltaTime);
@@ -180,10 +191,10 @@ public class Player : MonoBehaviour
 
         //head.GetComponent<Rigidbody2D>().rotation = angle;
 
-        Vector3 relativePos = target[location].transform.position - head.transform.position;
-        Quaternion rotation = Quaternion.LookRotation(relativePos);
-        Quaternion current = head.transform.localRotation;
-        head.transform.localRotation = Quaternion.Slerp(current, rotation, 100 * Time.deltaTime);
+        //Vector3 relativePos = targetNearest.transform.position - head.transform.position;
+        //Quaternion rotation = Quaternion.LookRotation(relativePos);
+        //Quaternion current = head.transform.localRotation;
+        //head.transform.localRotation = Quaternion.Slerp(current, rotation, 100 * Time.deltaTime);
     }
 
     //Quản lý đạn
@@ -198,8 +209,8 @@ public class Player : MonoBehaviour
             if (Time.time > timeLine + 0.5)
             {
                 gunAnim.Play("fire");
-                GameObject a = Instantiate(bullet, gun.transform.position + new Vector3(0, 0.2f, 0), 
-                    bullet.transform.rotation);
+                GameObject a = Instantiate(bullet, gun.transform.position + 
+                    new Vector3(0, 0.2f, 0), bullet.transform.rotation);
                 a.SetActive(true);
                 a.GetComponent<Bullet>().enabled = true;
                 timeLine = Time.time;
@@ -212,13 +223,13 @@ public class Player : MonoBehaviour
     {
         target = GameObject.FindGameObjectsWithTag("Target");
 
-        for (int i = 1; i < target.Length; i++)
+        for (int i = 0; i < target.Length; i++)
         {
             float b = Vector3.Distance(transform.position, target[i].transform.position);
-            if (dis > b)
+            if (dis >= b)
             {
                 dis = b;
-                location = i;
+                targetNearest = target[i];
             }
         }
     }
@@ -226,7 +237,7 @@ public class Player : MonoBehaviour
     //Điều khiển lật
     void FlipControl()
     {
-        if (transform.position.x > target[location].transform.position.x)
+        if (transform.position.x > targetNearest.transform.position.x)
         {
             //head.GetComponentInChildren<SpriteRenderer>().flipX = true;
             //gun.GetComponentInChildren<SpriteRenderer>().flipX = true;

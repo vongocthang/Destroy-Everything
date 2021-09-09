@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 public class MainUI : MonoBehaviour
 {
@@ -11,7 +14,6 @@ public class MainUI : MonoBehaviour
 
     public FloatingJoystick floJoy;
     //Biến tạm
-
 
     // Start is called before the first frame update
     void Start()
@@ -55,12 +57,30 @@ public class MainUI : MonoBehaviour
         }
     }
 
+
+    //Nhảy lên
+    public void JumpUp()
+    {
+        if (playerSC.jumpUp == false && playerSC.jumpDown == false && playerSC.getDown == false)
+        {
+            Debug.Log("nhảy lên");
+            playerSC.jumpUp = true;
+            playerSC.cd.isTrigger = true;
+            playerRB.velocity = Vector2.up * playerSC.jumpSpeed;
+        }
+    }
+
+    //Nhảy xuống
     public void JumpDown()
     {
-        if (playerSC.onBlocked == false)
+        if (playerSC.jumpDown == false)
         {
-            player.GetComponent<Collider2D>().isTrigger = true;
-            playerSC.jumpDown = true;
+            if (playerSC.onBlocked == false)
+            {
+                Debug.Log("nhảy xuống");
+                playerSC.cd.isTrigger = true;
+                playerSC.jumpDown = true;
+            }
         }
     }
 }

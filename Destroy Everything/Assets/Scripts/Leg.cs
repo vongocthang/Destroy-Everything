@@ -5,7 +5,7 @@ using UnityEngine;
 public class Leg : MonoBehaviour
 {
     public Player player;
-    public bool action = false;
+    public bool action = false;//Thực hiện hành động khác di chuyển sang trái-phải
 
     // Start is called before the first frame update
     void Start()
@@ -30,17 +30,17 @@ public class Leg : MonoBehaviour
                 action = false;
                 player.getDown = false;
                 player.jumpDown = false;
-                Debug.Log("không hành động");
             }
         }
         if (other.tag == "Tilemap not blocked")
         {
+            player.onBlocked = false;
+
             if (player.getDown == true || player.jumpDown == true)
             {
                 action = false;
                 player.getDown = false;
                 player.jumpDown = false;
-                Debug.Log("không hành động");
             }
         }
     }
@@ -49,22 +49,18 @@ public class Leg : MonoBehaviour
     {
         if (other.tag == "Tilemap blocked")
         {
-            player.onBlocked = false;
-
             action = true;
-            if (player.jumpUp == false)
+            if (player.jumpUp == false && player.jumpDown == false)
             {
                 player.jumpDown = true;
-                Debug.Log("nhảy xuống");
             }
         }
         if (other.tag == "Tilemap not blocked")
         {
             action = true;
-            if (player.jumpUp == false)
+            if (player.jumpUp == false && player.jumpDown == false)
             {
                 player.jumpDown = true;
-                Debug.Log("nhảy xuống");
             }
         }
     }
