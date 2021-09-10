@@ -12,7 +12,8 @@ public class MainUI : MonoBehaviour
     Rigidbody2D playerRB;
     Animator playerAnim;
 
-    public FloatingJoystick floJoy;
+    public DynamicJoystick dynamicJoystick;
+    public GameObject joystickLocation;//Phân thân của Joystick ở vị trí mặc định
     //Biến tạm
 
     // Start is called before the first frame update
@@ -37,12 +38,13 @@ public class MainUI : MonoBehaviour
     //Điều khiển Joystick di chuyển trái phải
     void JoystickControll()
     {
-        Vector2 direction = Vector2.right * floJoy.Horizontal;
+        Vector2 direction = Vector2.right * dynamicJoystick.Horizontal;
 
         if(direction.x > 0)
         {
             player.transform.Translate(Vector2.right * direction.x * playerSC.moveSpeed
                 * Time.deltaTime);
+            joystickLocation.SetActive(false);
             playerAnim.Play("walk");
         }
         else
@@ -53,6 +55,7 @@ public class MainUI : MonoBehaviour
 
         if (direction.x == 0)
         {
+            joystickLocation.SetActive(true);
             playerAnim.Play("ide");
         }
     }
