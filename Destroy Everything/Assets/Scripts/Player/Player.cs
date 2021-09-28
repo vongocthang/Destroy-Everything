@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
     Animator legAnim;
     Leg legScript;
     //public GameObject headPosition;
-    GameObject[] target;//Tập các mục tiêu cần tiêu diệt
+    public GameObject[] target;//Tập các mục tiêu cần tiêu diệt
     float dis;//Khoảng cách từ Player đến mục tiêu gần nhất
     public GameObject targetNearest;//Mục tiêu gần với Player nhất
     public bool flipX;
@@ -39,8 +39,7 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         cd = GetComponent<Collider2D>();
-        target = GameObject.FindGameObjectsWithTag("Target");
-        dis = Vector3.Distance(transform.position, target[0].transform.position);
+        //target = GameObject.FindGameObjectsWithTag("Target");
         gunAnim = gun.GetComponentInChildren<Animator>();
         legAnim = leg.GetComponent<Animator>();
         legScript = leg.GetComponent<Leg>();
@@ -222,13 +221,17 @@ public class Player : MonoBehaviour
     void FindTarget()
     {
         target = GameObject.FindGameObjectsWithTag("Target");
+        float distance;
 
         for (int i = 0; i < target.Length; i++)
         {
-            float b = Vector3.Distance(transform.position, target[i].transform.position);
-            if (dis >= b)
+            targetNearest = target[0];
+            dis= Vector3.Distance(transform.position, targetNearest.transform.position);
+            distance = Vector3.Distance(transform.position, target[i].transform.position);
+
+            if (distance < dis)
             {
-                dis = b;
+                dis = distance;
                 targetNearest = target[i];
             }
         }

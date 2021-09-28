@@ -26,7 +26,7 @@ public class TargetControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Die();
+        Die();
     }
 
     //Chết
@@ -42,14 +42,10 @@ public class TargetControl : MonoBehaviour
     {
         if (other.tag == "Bullet")
         {
+            Debug.Log("bi ban trung");
             health -= player.damge;
             heathBar.SetHealth(health, maxHealth);
             //point.text = health.ToString();
-
-            if (health <= 0)
-            {
-                Destroy(gameObject);
-            }
         }
     }
 }
